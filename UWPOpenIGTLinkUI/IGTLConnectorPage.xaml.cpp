@@ -81,8 +81,8 @@ namespace UWPOpenIGTLinkUI
   {
     InitializeComponent();
 
-    m_IGTClient->ServerHost = ref new HostName(L"192.168.0.26");
-    ServerHostnameTextBox->Text = L"192.168.0.26";
+    m_IGTClient->ServerHost = ref new HostName(L"127.0.0.1");
+    ServerHostnameTextBox->Text = L"127.0.0.1";
   }
 
   //----------------------------------------------------------------------------
@@ -91,10 +91,12 @@ namespace UWPOpenIGTLinkUI
     if (m_IGTClient->Connected)
     {
       double timestamp(0.0);
-      TrackedFrame^ frame = m_IGTClient->GetTrackedFrame(timestamp);
+
+      VideoFrame^ frame = m_IGTClient->GetImage(timestamp);
+
       if (frame == nullptr)
       {
-        return;
+          return;
       }
 
       if (m_WriteableBitmap == nullptr)
@@ -102,25 +104,29 @@ namespace UWPOpenIGTLinkUI
         m_WriteableBitmap = ref new WriteableBitmap(frame->Dimensions[0], frame->Dimensions[1]);
       }
 
-      if (!IBufferToWriteableBitmap(frame->Frame->Image->ImageData, frame->Dimensions[0], frame->Dimensions[1], frame->Frame->NumberOfScalarComponents))
+      if (!IBufferToWriteableBitmap(frame->Image->ImageData, frame->Dimensions[0], frame->Dimensions[1], frame->NumberOfScalarComponents))
       {
-        return;
+          return;
       }
 
       if (ImageDisplay->Source != m_WriteableBitmap)
       {
-        ImageDisplay->Source = m_WriteableBitmap;
-      }
-      Platform::String^ text = L"Received " + frame->Transforms->Size + L" transforms:\n";
-      for (auto transformEntry : frame->Transforms)
-      {
-        float3 origin = transform(float3(0.f, 0.f, 0.f), transpose(transformEntry->Matrix));
-        std::wstringstream ss;
-        ss << L"  " << transformEntry->Name->GetTransformName()->Data() << L" (" << std::fixed << std::setprecision(2) << origin.x << "L, " << origin.y << L", " << origin.z << L")" << std::endl;
-        text += ref new Platform::String(ss.str().c_str());
+          ImageDisplay->Source = m_WriteableBitmap;
       }
 
+      
+      float3 origin = transform(float3(0.f, 0.f, 0.f), transpose(frame->EmbeddedImageTransform));
+
+      Platform::String^ text = L"Receiving video.\n";
+ 
       TransformTextBlock->Text = text;
+      
+    }
+    else
+    {
+        Platform::String^ text = L"Video stopped.\n";
+
+        TransformTextBlock->Text = text;
     }
   }
 
@@ -140,7 +146,7 @@ namespace UWPOpenIGTLinkUI
     TextBox^ textBox = dynamic_cast<TextBox^>(sender);
     if (textBox->Text != m_IGTClient->ServerHost->DisplayName)
     {
-      m_IGTClient->ServerHost = ref new HostName(textBox->Text);
+      m_hostname = textBox->Text;
     }
   }
 
@@ -163,6 +169,7 @@ namespace UWPOpenIGTLinkUI
     else
     {
       ConnectButton->Content = L"Connecting...";
+      m_IGTClient->ServerHost = ref new HostName(m_hostname);
       create_task(m_IGTClient->ConnectAsync(2.0)).then([this](task<bool> connectTask)
       {
         try

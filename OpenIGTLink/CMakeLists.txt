@@ -10,9 +10,9 @@ endif()
 
 # Dependencies 
 include(FetchContent)
-set(BUILD_SHARED_LIBS OFF)
-set(OpenIGTLink_BUILD_TESTING OFF)
-set(BUILD_EXAMPLES OFF)
+set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Static build of OpenIGTLink.")
+set(OpenIGTLink_BUILD_TESTING OFF CACHE INTERNAL "Do not build testing.")
+set(BUILD_EXAMPLES OFF CACHE INTERNAL "Do not build examples.")
 
 # Target
 FetchContent_Declare(OpenIGTLink

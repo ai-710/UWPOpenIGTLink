@@ -4,13 +4,16 @@ ipch
 Release
 Win32
 x64
+ARM64
 .vs
 *.opendb
 *.db
 Generated Files
 /UWPOpenIGTLinkUI/UWPOpenIGTLinkUI.vcxproj.user
 /TrackedUltrasound/*.filters
-/OpenIGTLink-bin-Win32
-/OpenIGTLink-bin-x64
+OpenIGTLink-bin-[Ww]in32
+OpenIGTLink-bin-x64
+OpenIGTLink-bin-arm64
+OpenIGTLink-ARM64
 /packages
 /UWPOpenIGTLink/*.user

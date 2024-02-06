@@ -252,6 +252,8 @@ namespace UWPOpenIGTLink
     memcpy((void*)imgData.get(), imgMsg->GetScalarPointer(), imgMsg->GetImageSize());
 
     frame->SetImageData(imgData, static_cast<uint16>(imgMsg->GetNumComponents()), (IGTL_SCALAR_TYPE)imgMsg->GetScalarType(), frameSizeUint);
+    //frame->Type = US_IMG_BRIGHTNESS; // Not perfect, but this data isn't transmitted with an image message, could check metadata?
+    //frame->Orientation = US_IMG_ORIENT_MF;
     frame->Type = US_IMG_BRIGHTNESS; // Not perfect, but this data isn't transmitted with an image message, could check metadata?
     frame->Orientation = US_IMG_ORIENT_MF;
 

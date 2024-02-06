@@ -200,7 +200,7 @@ namespace igtl
   //----------------------------------------------------------------------------
   igtlUint64 TrackedFrameMessage::CalculateContentBufferSize()
   {
-    return static_cast<int>(this->m_messageHeader.GetMessageHeaderSize()
+    return static_cast<igtlUint64>(this->m_messageHeader.GetMessageHeaderSize()
                             + this->m_messageHeader.m_ImageDataSizeInBytes
                             + this->m_messageHeader.m_XmlDataSizeInBytes);
   }
